@@ -1,0 +1,125 @@
+{
+    "$schema": "https://raw.githubusercontent.com/mspnp/template-building-blocks/master/schemas/buildingBlocks.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "buildingBlocks": {
+            "value": [
+                {
+                    "type": "VirtualNetwork",
+                    "resourceGroupName": "sbg-sp2016-network-rg",
+                    "settings":[
+                        {
+                            "name": "sbg-sp2016-vnet",
+                            "addressPrefixes": [
+                              "10.0.0.0/16"
+                            ],
+                            "subnets": [
+                              {
+                                "name": "web",
+                                "addressPrefix": "10.0.1.0/24"
+                              },
+                              {
+                                "name": "cache",
+                                "addressPrefix": "10.0.2.0/24"
+                              },
+                              {
+                                "name": "sql",
+                                "addressPrefix": "10.0.3.0/24"
+                              },
+                              {
+                                "name": "ad",
+                                "addressPrefix": "10.0.4.0/24"
+                              },
+                              {
+                                "name": "app",
+                                "addressPrefix": "10.0.5.0/24"
+                              },
+                              {
+                                "name": "search",
+                                "addressPrefix": "10.0.6.0/24"
+                              },
+                              {
+                                "name": "mgmt",
+                                "addressPrefix": "10.0.0.128/25"
+                              },
+                              {
+                                "name": "GatewaySubnet",
+                                "addressPrefix": "10.0.255.224/27"
+                              }
+                            ],
+                            "dnsServers": [
+                              "10.0.4.4",
+                              "10.0.4.5",
+                              "168.63.129.16"
+                            ]
+                        }                        
+                    ]
+                },                
+                {
+                    "type": "VirtualNetworkGateway",
+                    "settings":[
+                        {
+                            "name": "sbg-onprem-vpn-vgw",
+                            "resourceGroupName": "sbg-onprem-sp2016-rg",
+                            "gatewayType": "Vpn",
+                            "vpnType": "RouteBased",
+                            "sku": "Basic",
+                            "isPublic": true,
+                            "virtualNetwork": {
+                                "name": "sbg-onprem-vnet",
+                                "resourceGroupName": "sbg-onprem-sp2016-rg"
+                            }
+                        },
+                        {
+                            "name": "sbg-adds-vpn-vgw",
+                            "resourceGroupName": "sbg-sp2016-network-rg",
+                            "gatewayType": "Vpn",
+                            "vpnType": "RouteBased",
+                            "sku": "Basic",
+                            "isPublic": true,
+                            "virtualNetwork": {
+                                "name": "sbg-sp2016-vnet",
+                                "resourceGroupName": "sbg-sp2016-network-rg"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "Connection",
+                    "settings":[
+                        {
+                            "name": "sbg-adds-vpn-cn",
+                            "connectionType": "Vnet2Vnet",
+                            "sharedKey": "123secret",
+                            "routingWeight": 100,
+                            "resourceGroupName": "sbg-sp2016-network-rg",
+                            "virtualNetworkGateway1": {
+                              "name": "sbg-adds-vpn-vgw",
+                              "resourceGroupName": "sbg-sp2016-network-rg"
+                            },
+                            "virtualNetworkGateway2": {
+                              "name": "sbg-onprem-vpn-vgw",
+                              "resourceGroupName": "sbg-onprem-sp2016-rg"
+                            }        
+                        },
+                        {
+                            "name": "sbg-onprem-vpn-cn",
+                            "connectionType": "Vnet2Vnet",
+                            "sharedKey": "123secret",
+                            "resourceGroupName": "sbg-onprem-sp2016-rg",
+                            "routingWeight": 101,
+                            "virtualNetworkGateway1": {
+                              "name": "sbg-onprem-vpn-vgw",
+                              "resourceGroupName": "sbg-onprem-sp2016-rg"
+                            },
+                            "virtualNetworkGateway2": {
+                              "name": "sbg-adds-vpn-vgw",
+                              "resourceGroupName": "sbg-sp2016-network-rg"
+                            }                            
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
